@@ -15,7 +15,9 @@
   <link rel="preload" href="assets/fonts/libre-caslon-display.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="diagrams.css">
+  <link rel="stylesheet" href="results.css">
   <script src="app.js" defer></script>
+  <script src="results.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -71,7 +73,6 @@
       <figcaption id="demo-caption"><span>From action features to future supervision.</span><a href="assets/demo-captioned.mp4" download>Download captioned video <span aria-hidden="true">↓</span></a></figcaption>
     </figure>
     <nav class="demo-chapters" aria-label="Video chapters"><button type="button" data-seek="0">Introduction</button><button type="button" data-seek="12">Architecture</button><button type="button" data-seek="22">Method</button><button type="button" data-seek="119">Robot experiments</button></nav>
-    <details class="transcript"><summary>Video transcript</summary><p>FDM learns robotic actions with supervision from future world states. Unlike future-conditioned actions, FDM predicts future states from action features. During training, future prediction errors backpropagate through action features into the policy. At inference, FDM uses the current observation and instruction, skipping future generation.</p><p>The final sequences compare FDM w/ VLM, FDM w/ VGM, π₀.₅, and FastWAM-Joint on a dual-arm ARX-X5: drawer packing, box packing and closing, shuttlecock insertion, paper-cup stacking, and block stacking. All five embedded experiment videos play in full at 1× speed. <a href="assets/demo-transcript.txt">Read the full English transcript</a>.</p></details>
     <div class="credits">
       <p class="authors"><a href="https://xiao10ma.github.io/">Zipei Ma<sup>1,2</sup></a><a href="https://selfspin.github.io/">Junzhe Jiang<sup>1</sup></a><span>Jiahui Zhang<sup>1</sup></span><span>Juntong Zhang<sup>2</sup></span><span>Chun Gu<sup>1,2</sup></span><span>Bozhou Zhang<sup>1</sup></span><span>Jiankang Deng<sup>3</sup></span><a href="https://x-up-lab.github.io/">Xiatian Zhu<sup>4</sup></a><a href="https://lzrobots.github.io/">Li Zhang<sup>1,2</sup></a></p>
       <p class="affiliations"><span><sup>1</sup> Fudan University</span><span><sup>2</sup> Shanghai Innovation Institute</span><span><sup>3</sup> Imperial College London</span><span><sup>4</sup> University of Surrey</span></p>
@@ -151,7 +152,10 @@
             <desc id="fdm-description">Vision and language enter a VLM or VGM, then an action expert predicts actions. Context and action features also condition a generation expert to predict the future during training only. Future predictions never feed into the action expert.</desc>
             <defs>
               <marker id="fdm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 9 5 1 9Z"/></marker>
-              <clipPath id="fdm-backbone-clip"><rect x="38" y="92" width="366" height="68" rx="10"/></clipPath>
+              <linearGradient id="fdm-backbone-fill" x1="0" y1="0" x2="1" y2="0">
+                <stop class="backbone-context" offset="0%"/>
+                <stop class="backbone-generation" offset="100%"/>
+              </linearGradient>
             </defs>
             <rect class="training-boundary" x="12" y="336" width="418" height="112" rx="12"/>
             <g class="diagram-edge"><path class="edge-track" d="M116 62V88"/><path class="flow-pulse" d="M116 62V88"/></g>
@@ -164,10 +168,6 @@
             <rect class="node-visual" x="42" y="18" width="148" height="44" rx="8"/>
             <rect class="node-language" x="252" y="18" width="148" height="44" rx="8"/>
             <text class="node-label" x="116" y="46">Vision</text><text class="node-label" x="326" y="46">Language</text>
-            <g class="backbone-halves" clip-path="url(#fdm-backbone-clip)">
-              <rect class="node-context" x="38" y="92" width="183" height="68"/>
-              <rect class="node-generation" x="221" y="92" width="183" height="68"/>
-            </g>
             <rect class="node-backbone" x="38" y="92" width="366" height="68" rx="10"/>
             <text class="node-label" x="221" y="134">VLM / VGM</text>
             <rect class="node-action" x="72" y="198" width="298" height="58" rx="10"/>
@@ -194,16 +194,21 @@
   <section class="pipeline-section section" id="pipeline" aria-labelledby="pipeline-title">
     <div class="wrap">
       <div class="section-heading"><h2 id="pipeline-title">A learning signal.<br>Not an inference dependency.</h2><p>Three expert roles, one directional connection. The future-prediction loss flows back through the features that produce actions.</p></div>
-      <div class="mode-controls" role="group" aria-label="Pipeline mode"><button type="button" class="selected" data-mode="training" aria-pressed="true">During training</button><button type="button" data-mode="inference" aria-pressed="false">At inference</button></div>
-      <div class="pipeline-display" id="pipeline-display" data-mode="training">
-        <div class="expert context-expert"><span class="expert-role">Observation + instruction</span><h3>Context expert</h3><p>Understand the scene<br>and the task.</p></div>
-        <svg class="flow-arrow" viewBox="0 0 64 24" aria-hidden="true"><path d="M2 12h56m-9-8 9 8-9 8"/></svg>
-        <div class="expert action-expert"><span class="expert-role">Action features</span><h3>Action expert</h3><p>Predict the robot’s<br>next actions.</p></div>
-        <svg class="flow-arrow generation-path" viewBox="0 0 64 24" aria-hidden="true"><path d="M2 12h56m-9-8 9 8-9 8"/></svg>
-        <div class="expert generation-expert"><span class="expert-role">Future-state supervision</span><h3>Generation expert</h3><p>Predict the consequences<br>from action features.</p><span class="skipped">Skipped at inference</span></div>
-        <div class="supervision-path"><svg viewBox="0 0 500 45" preserveAspectRatio="none" aria-hidden="true"><path d="M485 3v30H15V3m-7 9 7-9 7 9"/></svg><span>Future loss supervises action features</span></div>
+      <div class="pipeline-overview" id="pipeline-overview" data-flow-figure>
+        <div class="pipeline-toolbar">
+          <div class="mode-controls" role="group" aria-label="Pipeline mode"><button type="button" class="selected" data-mode="training" aria-pressed="true">During training</button><button type="button" data-mode="inference" aria-pressed="false">At inference</button></div>
+          <button class="diagram-playback" type="button" data-flow-toggle hidden>Pause animation</button>
+        </div>
+        <div class="pipeline-display" id="pipeline-display" data-mode="training">
+          <div class="expert context-expert"><span class="expert-role">Observation + instruction</span><h3>Context expert</h3><p>Understand the scene<br>and the task.</p></div>
+          <svg class="flow-arrow" viewBox="0 0 64 24" aria-hidden="true"><g class="diagram-edge"><path class="edge-track" d="M2 12H58"/><path class="flow-pulse" d="M2 12H58"/><path d="m49 4 9 8-9 8"/></g></svg>
+          <div class="expert action-expert"><span class="expert-role">Action features</span><h3>Action expert</h3><p>Predict the robot’s<br>next actions.</p></div>
+          <svg class="flow-arrow generation-path" viewBox="0 0 64 24" aria-hidden="true"><g class="diagram-edge"><path class="edge-track" d="M2 12H58"/><path class="flow-pulse" d="M2 12H58"/><path d="m49 4 9 8-9 8"/></g></svg>
+          <div class="expert generation-expert"><span class="expert-role">Future-state supervision</span><h3>Generation expert</h3><p>Predict the consequences<br>from action features.</p><span class="skipped">Skipped at inference</span></div>
+          <div class="supervision-path"><svg viewBox="0 0 500 45" preserveAspectRatio="none" aria-hidden="true"><g class="diagram-edge backprop-edge"><path class="edge-track" d="M485 3V33H15V3"/><path class="flow-pulse" d="M485 3V33H15V3"/><path d="m8 12 7-9 7 9"/></g></svg><span>Future loss supervises action features</span></div>
+        </div>
+        <p class="mode-explanation" id="mode-explanation" aria-live="polite">Train jointly with action imitation and future prediction. Asymmetric attention blocks future information from reaching actions, including through context.</p>
       </div>
-      <p class="mode-explanation" id="mode-explanation" aria-live="polite">Train jointly with action imitation and future prediction. Asymmetric attention blocks future information from reaching actions, including through context.</p>
       <details class="technical-figure" open>
         <summary>Explore the full MoT pipeline</summary>
         <figure class="paper-figure vector-figure" id="pipeline-detail" data-mode="training" data-flow-figure>
@@ -252,9 +257,9 @@
                 <rect class="node-generation" x="718" y="190" width="394" height="144" rx="14"/>
                 <text class="node-label" x="915" y="230">Generation expert</text>
                 <rect class="attention-band" x="648" y="258" width="480" height="48" rx="7"/>
-                <rect class="injection-band" x="596" y="258" width="148" height="48" rx="7"/>
-                <text class="injection-label" x="670" y="278">Action features<tspan x="670" dy="19">injection</tspan></text>
-                <g class="diagram-edge conditioning-edge"><path class="edge-track" d="M660 230H712"/><path class="flow-pulse" d="M660 230H712"/></g>
+                <rect class="injection-band" x="612" y="258" width="148" height="48" rx="7"/>
+                <text class="injection-label" x="686" y="278">Action features<tspan x="686" dy="19">injection</tspan></text>
+                <g class="diagram-edge injection-edge"><path class="edge-track" d="M660 230H712"/><path class="flow-pulse" d="M660 230H712"/></g>
                 <g class="diagram-edge"><path class="edge-track" d="M802 372V340"/><path class="flow-pulse" d="M802 372V340"/></g>
                 <g class="future-tokens"><rect x="748" y="378" width="28" height="28" rx="5"/><rect x="788" y="378" width="28" height="28" rx="5"/><rect x="828" y="378" width="28" height="28" rx="5"/></g>
                 <text class="node-detail" x="802" y="432">Input visual</text>
@@ -290,7 +295,81 @@
   <section class="section wrap results-section" id="results" aria-labelledby="results-title">
     <div class="section-heading"><h2 id="results-title">Learning that carries<br>into the real world.</h2><p>Evaluated in simulation and on a dual-arm ARX-X5 robot. Results below are reported in the paper.</p></div>
     <div class="results-strip"><div><strong>99.4<span>%</span></strong><h3>LIBERO average success</h3><p>FDM w/ VLM · four task suites</p></div><div><strong>+13<span> pp</span></strong><h3>Real-world success gain</h3><p>Up to 13 percentage points over compared baselines</p></div><div><strong>1.8<span>×</span></strong><h3>Faster action inference</h3><p>FDM w/ VGM vs. FastWAM-Joint · one H100</p></div></div>
-    <details class="benchmark-details"><summary>See benchmark results and inference latency</summary><div class="table-scroll"><table><caption>Simulation success rates (%), as reported in the manuscript.</caption><thead><tr><th scope="col">Model</th><th scope="col">LIBERO average</th><th scope="col">RoboTwin clean</th><th scope="col">RoboTwin randomized</th><th scope="col">RoboTwin average</th></tr></thead><tbody><tr><th scope="row">FDM w/ VLM</th><td>99.4</td><td>81.54</td><td>80.86</td><td>81.20</td></tr><tr><th scope="row">FDM w/ VGM</th><td>98.1</td><td>88.84</td><td>89.62</td><td>89.23</td></tr></tbody></table></div><p class="latency-note">Action-chunk latency on one H100: π₀.₅ 203.77 ms; FDM w/ VLM 202.98 ms; FastWAM-Joint 446.55 ms; FDM w/ VGM 253.45 ms. Comparisons use matched settings within each backbone family.</p></details>
+    <div class="results-explorer" id="results-explorer" data-dataset="real">
+      <div class="results-controls" hidden>
+        <div class="results-views" role="group" aria-label="Select an experiment"><button type="button" data-results-view="real" aria-pressed="true">Real robot</button><button type="button" data-results-view="libero" aria-pressed="false">LIBERO</button><button type="button" data-results-view="robotwin" aria-pressed="false">RoboTwin 2.0</button><button type="button" data-results-view="ablations" aria-pressed="false">Ablations</button><button type="button" data-results-view="efficiency" aria-pressed="false">Efficiency</button></div>
+        <div class="results-filter"><label for="result-metric">Task or metric</label><select id="result-metric"><option value="average">Average</option></select></div>
+      </div>
+      <div class="results-chart-heading"><h3 id="results-view-title">Five tasks on a real robot</h3><p id="results-measure">Average · % · higher is better</p></div>
+      <div class="result-families" aria-describedby="results-protocol">
+        <section class="result-family" data-result-family="vlm" aria-labelledby="result-vlm-title">
+          <h4 id="result-vlm-title">VLM-based policies</h4>
+          <div class="result-axis" aria-hidden="true"><span>0</span><span>50</span><span>100</span></div>
+          <div class="result-bars">
+          <div class="result-row">
+            <div class="result-row-heading"><span class="result-name">π₀</span><span class="result-value">67%</span></div>
+            <p class="result-detail">VLA baseline</p>
+            <div class="result-track" aria-hidden="true"><span class="result-bar" style="--bar-scale: 0.67"></span></div>
+          </div>
+          <div class="result-row">
+            <div class="result-row-heading"><span class="result-name">π₀.₅</span><span class="result-value">83%</span></div>
+            <p class="result-detail">VLA baseline</p>
+            <div class="result-track" aria-hidden="true"><span class="result-bar" style="--bar-scale: 0.83"></span></div>
+          </div>
+          <div class="result-row result-ours">
+            <div class="result-row-heading"><span class="result-name">FDM w/ VLM</span><span class="result-value">96%</span></div>
+            <p class="result-detail">Our model</p>
+            <div class="result-track" aria-hidden="true"><span class="result-bar" style="--bar-scale: 0.96"></span></div>
+          </div>
+          </div>
+          <p class="result-insight">FDM is 13 percentage points above π₀.₅.</p>
+        </section>
+        <section class="result-family" data-result-family="vgm" aria-labelledby="result-vgm-title">
+          <h4 id="result-vgm-title">VGM-based policies</h4>
+          <div class="result-axis" aria-hidden="true"><span>0</span><span>50</span><span>100</span></div>
+          <div class="result-bars">
+          <div class="result-row">
+            <div class="result-row-heading"><span class="result-name">DreamZero</span><span class="result-value">71%</span></div>
+            <p class="result-detail">WAM baseline</p>
+            <div class="result-track" aria-hidden="true"><span class="result-bar" style="--bar-scale: 0.71"></span></div>
+          </div>
+          <div class="result-row">
+            <div class="result-row-heading"><span class="result-name">FastWAM-Joint</span><span class="result-value">78%</span></div>
+            <p class="result-detail">Future-conditioned WAM</p>
+            <div class="result-track" aria-hidden="true"><span class="result-bar" style="--bar-scale: 0.78"></span></div>
+          </div>
+          <div class="result-row result-ours">
+            <div class="result-row-heading"><span class="result-name">FDM w/ VGM</span><span class="result-value">83%</span></div>
+            <p class="result-detail">Our model</p>
+            <div class="result-track" aria-hidden="true"><span class="result-bar" style="--bar-scale: 0.83"></span></div>
+          </div>
+          </div>
+          <p class="result-insight">FDM is 5 percentage points above FastWAM-Joint.</p>
+        </section>
+      </div>
+      <p class="results-protocol" id="results-protocol">Dual-arm ARX-X5 · 20 trials per method per task · averages across five tasks.</p>
+      <div class="results-sources"><a id="results-source" href="https://arxiv.org/pdf/2610.13117#page=8">Figure 5 in the paper</a><a href="assets/results.json" download>Download result data</a></div>
+      <p class="visually-hidden" id="results-status" role="status" aria-live="polite"></p>
+      <details class="results-table" open><summary>View exact values</summary>
+        <div class="table-scroll" id="result-table" tabindex="0" role="region" aria-label="Reported experiment values">
+          <table><caption>Real robot · Figure 5 · all reported values</caption><thead><tr><th scope="col">Backbone</th><th scope="col">Method</th><th scope="col">Setup</th><th scope="col">Drawer packing (%)</th><th scope="col">Box packing (%)</th><th scope="col">Shuttlecock insertion (%)</th><th scope="col">Cup stacking (%)</th><th scope="col">Block stacking (%)</th><th scope="col">Average (%)</th></tr></thead><tbody><tr><td>VLM</td><th scope="row">π₀</th><td>VLA baseline</td><td>60</td><td>65</td><td>55</td><td>80</td><td>75</td><td>67</td></tr><tr><td>VLM</td><th scope="row">π₀.₅</th><td>VLA baseline</td><td>75</td><td>80</td><td>75</td><td>95</td><td>90</td><td>83</td></tr><tr class="result-table-ours"><td>VLM</td><th scope="row">FDM w/ VLM</th><td>Our model</td><td>95</td><td>95</td><td>90</td><td>100</td><td>100</td><td>96</td></tr><tr><td>VGM</td><th scope="row">DreamZero</th><td>WAM baseline</td><td>65</td><td>70</td><td>65</td><td>75</td><td>80</td><td>71</td></tr><tr><td>VGM</td><th scope="row">FastWAM-Joint</th><td>Future-conditioned WAM</td><td>70</td><td>70</td><td>75</td><td>90</td><td>85</td><td>78</td></tr><tr class="result-table-ours"><td>VGM</td><th scope="row">FDM w/ VGM</th><td>Our model</td><td>70</td><td>75</td><td>70</td><td>100</td><td>100</td><td>83</td></tr></tbody></table>
+        </div>
+      </details>
+    </div>
+    <div class="result-analyses">
+      <article class="result-analysis">
+        <h3>Future errors stay<br>out of the action path.</h3>
+        <p>At perturbation strength α = 1.0, FastWAM-Joint’s action error increases by 4.44% on LIBERO and 5.52% on RoboTwin. FDM’s actions remain unchanged when model parameters, inputs and action-sampling randomness are fixed.</p>
+        <figure><a href="assets/future-perturbation.pdf" aria-label="Open the original future-perturbation figure"><img src="assets/future-perturbation.svg" width="720" height="432" loading="lazy" alt="FastWAM-Joint action error generally increases with future perturbation strength across seven settings. FDM is a dashed zero line representing architectural invariance."></a><figcaption><span>Figure 6 · Future-latent perturbations</span><a href="https://arxiv.org/pdf/2610.13117#page=9">Paper analysis</a></figcaption></figure>
+        <p class="analysis-note">The FDM zero line is an architectural property under fixed inputs and randomness, rather than a fitted experimental curve.</p>
+      </article>
+      <article class="result-analysis">
+        <h3>Future gradients support<br>action learning.</h3>
+        <p>The paper measures cosine similarity between action-imitation gradients and future-loss gradients through the action-feature interface. Alignment is predominantly positive for VLM and positive in most VGM settings after initial fluctuations.</p>
+        <figure><a href="assets/gradient-alignment.pdf" aria-label="Open the original gradient-alignment figure"><img src="assets/gradient-alignment.svg" width="1152" height="374" loading="lazy" alt="Gradient cosine similarity over training progress for FDM with VLM and VGM, across LIBERO, RoboTwin and five real-robot tasks."></a><figcaption><span>Figure 7 · Shared-context K/V projections</span><a href="https://arxiv.org/pdf/2610.13117#page=10">Paper analysis</a></figcaption></figure>
+        <p class="analysis-note">The controlled ablations above isolate the behavioral contribution: full FDM improves average success over stop-gradient by 7 points for VLM and 5 points for VGM.</p>
+      </article>
+    </div>
   </section>
 
   <section class="experiments-section section" id="experiments" aria-labelledby="experiments-title">
@@ -303,7 +382,7 @@
       <noscript><p>Enable JavaScript to switch tasks and play comparisons. You can also <a href="assets/comparisons/drawer/FDM-VLM.mp4">watch the drawer-packing FDM w/ VLM recording</a>.</p></noscript>
       <p id="playback-status" class="playback-status" role="status">Select a task, then play the four recordings together.</p>
       <p class="experiment-note">Each video combines a 640 × 480 third view above two 320 × 240 wrist views. All views start together; shorter recordings hold their final frame. Displayed duration is the recording length, not model inference latency. Individual clips illustrate behavior; aggregate success uses 20 trials per method per task.</p>
-      <details class="real-results"><summary>View aggregate real-robot success rates</summary><figure class="paper-figure"><img src="assets/real_results_bar.webp" width="2152" height="620" loading="lazy" alt="Paper figure comparing per-task and average success over five real-robot tasks, with 20 trials per method per task. Both FDM variants outperform their corresponding comparison methods on average."><figcaption>Per-task and average success rates from the paper. <a href="assets/real_results_bar.pdf">Open full-resolution PDF</a></figcaption></figure></details>
+      <details class="real-results" open><summary>View aggregate real-robot success rates</summary><figure class="paper-figure"><img src="assets/real_results_bar.svg" width="2152" height="620" loading="lazy" alt="Paper figure comparing per-task and average success over five real-robot tasks, with 20 trials per method per task. Both FDM variants outperform their corresponding comparison methods on average."><figcaption>Per-task and average success rates from the paper. <a href="assets/real_results_bar.pdf">Open full-resolution PDF</a></figcaption></figure></details>
     </div>
   </section>
 

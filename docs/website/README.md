@@ -20,7 +20,7 @@ For video chapter seeking during playback, use a preview server with HTTP byte-r
 
 The project URL is https://logosroboticsgroup.github.io/FDM/.
 
-1. Include `docs/website/index.html`, `docs/website/styles.css`, `docs/website/diagrams.css`, `docs/website/app.js`, **all of `docs/website/assets/`**, and `.github/workflows/project-page.yml` in the repository.
+1. Include `docs/website/index.html`, both JavaScript files (`app.js`, `results.js`), all three stylesheets (`styles.css`, `diagrams.css`, `results.css`), **all of `docs/website/assets/`**, and `.github/workflows/project-page.yml` in the repository.
 2. In repository **Settings → Pages → Build and deployment**, select **GitHub Actions**.
 3. Push to the default branch, or run **Deploy FDM project page** manually from Actions. Only the default branch deploys automatically.
 4. Use the successful deployment's `page_url` as the live URL. Creating these files locally does not publish the site.
@@ -46,6 +46,9 @@ The workflow uploads only the website and prepared assets. Raw recordings, Power
 - `assets/comparisons.json`: durations and any incomplete view names for each composite.
 - `assets/*.{pdf,webp}`: original figure PDFs and raster derivatives.
 - Architecture comparison and the full MoT pipeline are inline SVG in `index.html`, styled by `diagrams.css`. Text and arrows stay sharp when zoomed. The pipeline opens by default and follows the training/inference controls. Arrow animations pause offscreen, in hidden tabs, when collapsed, or via each figure's pause button; reduced motion and disabled JavaScript retain static diagrams. Narrow screens stack the architecture panels and allow horizontal scrolling of the full pipeline. Original PDFs remain linked below both figures.
+- The simplified pipeline shares the same animation controls; its generation and backward paths stop at inference. Every remaining disclosure opens by default. The video transcript disclosure has been removed.
+- `results.js`, `results.css`, and `assets/results.json` provide interactive real-robot, LIBERO, RoboTwin, ablation, and efficiency comparisons. All 158 numerical entries were checked against Tables 2–5 and Figure 5 of the published arXiv paper. Success bars start at zero and retain all reported baselines; efficiency charts label their units and preferred direction. Bars animate only when a reader changes a selection, respecting reduced motion. Exact values are available in an expanded table and downloadable JSON. The real-robot average chart and full real-robot table are also present in static HTML.
+- `assets/future-perturbation.{svg,pdf}`, `assets/gradient-alignment.{svg,pdf}`, and `assets/real_results_bar.svg` preserve the supplied paper figures as vectors. SVGs are direct PyMuPDF exports from the source PDFs, with text converted to paths. Captions use the published paper's figure numbering (5–7). The perturbation zero line is explicitly identified as an architectural property; the curves have not been reconstructed from guessed data.
 - Fonts: DM Sans for body text, Libre Caslon Display for webpage headings, and Instrument Serif in the prepared video graphics, self-hosted under the SIL Open Font License; license files are in `assets/fonts/`.
 
 To regenerate derived figures, videos and subtitles from source material (not needed for hosting):
