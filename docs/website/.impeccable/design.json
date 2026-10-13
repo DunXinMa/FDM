@@ -1,0 +1,22 @@
+{
+  "name": "FDM editorial research",
+  "tokens": {
+    "color": {
+      "paper": "#f6f5f0",
+      "ink": "#202c28",
+      "muted": "#59665f",
+      "green": "#25564c",
+      "sage": "#e7ede6"
+    },
+    "font": {
+      "display": "Libre Caslon Display",
+      "body": "DM Sans"
+    },
+    "layout": {
+      "maxWidth": "1240px",
+      "sectionDesktop": "110px",
+      "sectionMobile": "64px"
+    }
+  },
+  "source": "../styles.css"
+}
