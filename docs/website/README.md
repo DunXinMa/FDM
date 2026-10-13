@@ -1,6 +1,6 @@
 # FDM project website
 
-Static English project page for **Forward Dynamics Model**, with locally hosted fonts, figures and narrated H.264 video. No Node build or runtime dependencies are required.
+Static English project page for **Forward Dynamics Models**, with locally hosted fonts, figures and narrated H.264 video. No Node build or runtime dependencies are required.
 
 The website lives in `docs/website/`, separate from the development guides in `docs/`; only the page and its prepared assets are deployed. Original PPTs and recordings remain local under `web/`.
 
@@ -30,11 +30,11 @@ The workflow uploads only the website and prepared assets. Raw recordings, Power
 ## Sources and editorial decisions
 
 - Method, numerical results and figures: supplied `ICLR27_Forwar_Dynamics_Models.pdf` and figure PDFs in the matching ZIP.
-- Public title: **Forward Dynamics Model** (singular), as specified by the author. The supplied PDF remains unmodified and uses the older plural title.
+- Public title: **Forward Dynamics Models**, matching the paper. All nine authors and four affiliations appear under the title on the opening cover; author profile links are preserved.
 - Authors and institutions: repository README and manuscript.
 - `gift/` contains the box-packing-and-closing experiment.
 - Success rates are manuscript results, not newly measured results from this release. A clip's duration is not inference latency.
-- `demo.mp4` is exported from the complete, updated 18-slide PowerPoint. Slides are rendered with LibreOffice; the five embedded comparison videos play in full at 1× speed, positioned in their original slide rectangles. PowerPoint build animations are flattened into static slide compositions. A derived copy uses the requested singular title and omits the submission number; the original PPT is unchanged. `demo-narrated.mp4` adds an English AI female voice to the clean video, timed to the 18 existing narration cues. No music or subtitle overlays are added.
+- `demo.mp4` is exported from the complete, updated 18-slide PowerPoint. Slides are rendered with LibreOffice; the five embedded comparison videos play in full at 1× speed, positioned in their original slide rectangles. PowerPoint build animations are flattened into static slide compositions. A derived copy preserves the paper’s plural title and omits the submission number; the original PPT is unchanged. `demo-narrated.mp4` adds an English AI female voice to the clean video, timed to the 18 existing narration cues. No music or subtitle overlays are added.
 
 ## Media and narration
 

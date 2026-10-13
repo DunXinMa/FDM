@@ -1,7 +1,7 @@
 WEBVTT
 
 00:00:00.000 --> 00:00:05.000
-Forward Dynamics Model: learn from the future, act in the present.
+Forward Dynamics Models: learn from the future, act in the present.
 
 00:00:05.000 --> 00:00:12.000
 FDM uses future prediction to improve action learning across two backbone families.

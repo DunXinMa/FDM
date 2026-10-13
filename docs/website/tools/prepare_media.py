@@ -64,7 +64,7 @@ def posters():
     image.save(ASSETS / "demo-poster.webp", quality=90)
     social = Image.new("RGB", (1200, 630), "#f6f5f0")
     draw = ImageDraw.Draw(social)
-    draw.text((55, 45), "Forward Dynamics Model", font=font(88, True), fill="#202c28")
+    draw.text((55, 45), "Forward Dynamics Models", font=font(88, True), fill="#202c28")
     social.paste(ImageOps.fit(image, (1090, 340)), (55, 245))
     social.save(ASSETS / "social.jpg", quality=90)
 

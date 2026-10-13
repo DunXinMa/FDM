@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>Forward Dynamics Model</h1>
+<h1>Forward Dynamics Models</h1>
 
 **Official implementation of “Forward Dynamics Models” (FDM).**
 

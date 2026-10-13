@@ -3,7 +3,7 @@
 ## Platform
 web
 ## Purpose
-Open-source research project page for Forward Dynamics Model. Lead with a captioned demo, explain architecture and pipeline, then show real-robot comparisons.
+Open-source research project page for Forward Dynamics Models. Lead with a captioned demo, explain architecture and pipeline, then show real-robot comparisons.
 ## Evidence
 README.md provides confirmed authors, affiliations and repository. The supplied manuscript provides claims and figures. web/ contains experiment recordings and PowerPoint sources. The updated demo PowerPoint is complete; export all 18 slides and its five embedded comparison videos with English captions.
 ## Users

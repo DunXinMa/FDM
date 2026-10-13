@@ -1,6 +1,6 @@
-Forward Dynamics Model — video transcript
+Forward Dynamics Models — video transcript
 
-Forward Dynamics Model: learn from the future, act in the present.
+Forward Dynamics Models: learn from the future, act in the present.
 
 FDM uses future prediction to improve action learning across two backbone families.
 

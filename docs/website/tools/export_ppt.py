@@ -23,7 +23,7 @@ NS = {
 }
 SECONDS = [5, 7, 10, 7, 9, 10, 12, 10, 10, 12, 9, 10, 8]
 CAPTIONS = [
-    "Forward Dynamics Model: learn from the future, act in the present.",
+    "Forward Dynamics Models: learn from the future, act in the present.",
     "FDM uses future prediction to improve action learning across two backbone families.",
     "VLA predicts actions directly. Future-conditioned WAM predicts futures first. FDM reverses this dependency.",
     "The generation branch reads action hidden states. Future-loss gradients supervise the action expert.",
@@ -63,7 +63,6 @@ def main():
         for name in source.namelist():
             data = source.read(name)
             if name.startswith("ppt/slides/slide") and name.endswith(".xml"):
-                data = data.replace(b"Forward Dynamics Models", b"Forward Dynamics Model")
                 data = data.replace(b"ICLR submission 3770", b"").replace(b"Act2Future: overview", b"FDM: overview")
                 # Rasterize the poster only; ffmpeg overlays the actual video afterward.
                 slide = ET.fromstring(data)
@@ -201,7 +200,7 @@ def main():
         + "\n"
     )
     (ASSETS / "demo-transcript.txt").write_text(
-        "Forward Dynamics Model — video transcript\n\n" + "\n\n".join(CAPTIONS) + "\n"
+        "Forward Dynamics Models — video transcript\n\n" + "\n\n".join(CAPTIONS) + "\n"
     )
     (ASSETS / "demo-metadata.json").write_text(
         json.dumps(

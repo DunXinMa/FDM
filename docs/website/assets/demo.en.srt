@@ -1,6 +1,6 @@
 1
 00:00:00,000 --> 00:00:05,000
-Forward Dynamics Model: learn from the future, act in the present.
+Forward Dynamics Models: learn from the future, act in the present.
 
 2
 00:00:05,000 --> 00:00:12,000
