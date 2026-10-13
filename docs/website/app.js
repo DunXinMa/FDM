@@ -1,5 +1,103 @@
 'use strict';
 
+const cover = document.querySelector('.cover');
+const coverVideo = document.querySelector('#cover-video');
+const coverPlayback = document.querySelector('#cover-playback');
+const coverStatus = document.querySelector('#cover-status');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let coverWantsPlayback = !reducedMotion.matches;
+let coverInView = true;
+let coverChapters = [];
+let coverPendingSeek = null;
+
+function updateCoverControl() {
+  const playing = !coverVideo.paused;
+  coverPlayback.classList.toggle('is-playing', playing);
+  coverPlayback.querySelector('span').textContent = playing ? 'Pause video' : 'Play video';
+}
+
+function syncCoverPlayback() {
+  if (!coverWantsPlayback || !coverInView || document.hidden) {
+    coverVideo.pause();
+    updateCoverControl();
+    return;
+  }
+  if (!coverVideo.getAttribute('src')) coverVideo.src = coverVideo.dataset.src;
+  coverVideo.play().then(() => {
+    coverStatus.textContent = '';
+  }).catch(error => {
+    if (error.name === 'AbortError') return;
+    coverWantsPlayback = false;
+    updateCoverControl();
+  });
+}
+
+coverPlayback.hidden = false;
+coverVideo.addEventListener('play', updateCoverControl);
+coverVideo.addEventListener('pause', updateCoverControl);
+coverVideo.addEventListener('loadedmetadata', () => {
+  if (coverPendingSeek !== null) {
+    coverVideo.currentTime = coverPendingSeek;
+    coverPendingSeek = null;
+  }
+});
+coverVideo.addEventListener('error', () => {
+  coverWantsPlayback = false;
+  coverStatus.textContent = 'Video unavailable. Press Play video to retry.';
+  updateCoverControl();
+});
+coverPlayback.addEventListener('click', () => {
+  coverWantsPlayback = coverVideo.paused;
+  if (coverVideo.error) coverVideo.load();
+  syncCoverPlayback();
+});
+
+function selectCoverTask(task) {
+  document.querySelectorAll('[data-cover-task]').forEach(button => {
+    const selected = button.dataset.coverTask === task;
+    button.setAttribute('aria-pressed', String(selected));
+    if (selected) document.querySelector('#cover-task-name').textContent = button.textContent;
+  });
+  coverVideo.poster = `assets/hero/${task}.webp`;
+}
+
+function updateCoverChapter() {
+  if (coverPendingSeek !== null) return;
+  const chapter = coverChapters.filter(item => item.start <= coverVideo.currentTime + 0.02).at(-1);
+  if (chapter && document.querySelector('[data-cover-task][aria-pressed=true]').dataset.coverTask !== chapter.task) {
+    selectCoverTask(chapter.task);
+  }
+}
+
+coverVideo.addEventListener('timeupdate', updateCoverChapter);
+fetch('assets/hero/chapters.json').then(response => {
+  if (!response.ok) throw new Error('Cover chapters unavailable');
+  return response.json();
+}).then(chapters => {
+  coverChapters = chapters;
+  document.querySelector('.cover-tasks').hidden = false;
+  updateCoverChapter();
+}).catch(() => { /* The complete video still plays without chapter navigation. */ });
+
+document.querySelectorAll('[data-cover-task]').forEach(button => {
+  button.addEventListener('click', () => {
+    const chapter = coverChapters.find(item => item.task === button.dataset.coverTask);
+    selectCoverTask(chapter.task);
+    if (coverVideo.readyState >= 1) coverVideo.currentTime = chapter.start;
+    else coverPendingSeek = chapter.start;
+    syncCoverPlayback();
+  });
+});
+new IntersectionObserver(entries => {
+  coverInView = entries[0].isIntersecting;
+  syncCoverPlayback();
+}, { threshold: 0 }).observe(cover);
+document.addEventListener('visibilitychange', syncCoverPlayback);
+reducedMotion.addEventListener('change', () => {
+  coverWantsPlayback = !reducedMotion.matches;
+  syncCoverPlayback();
+});
+
 const demo = document.querySelector('#demo-video');
 const demoLaunch = document.querySelector('#demo-launch');
 demoLaunch.hidden = false;

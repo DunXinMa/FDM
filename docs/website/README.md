@@ -14,6 +14,8 @@ python -m http.server 8000 --directory docs/website
 
 Open `http://localhost:8000`. Use an HTTP server rather than opening `index.html` directly so captions and duration metadata load correctly.
 
+For video chapter seeking during playback, use a preview server with HTTP byte-range support; Python's basic HTTP server does not provide it.
+
 ## GitHub Pages
 
 The project URL is https://logosroboticsgroup.github.io/FDM/.
@@ -36,6 +38,7 @@ The workflow uploads only the website and prepared assets. Raw recordings, Power
 
 ## Media and captions
 
+- `assets/hero/`: one silent H.264 cover video joining all five FDM w/ VLM tasks, plus chapter timestamps and WebP fallback posters, from the original FDM w/ VLM third-camera recordings. The five full recordings play consecutively at 1× speed, then loop; task buttons seek within the same video and follow the active chapter. Background playback pauses offscreen or in a hidden tab, respects manual pause, and starts with a static poster when reduced motion is preferred. The cover reuses the page's existing paper, sage and forest colors and self-hosted typefaces.
 - `assets/demo.mp4`: clean overview with optional native English captions (`demo.en.vtt`, on by default).
 - `assets/demo-captioned.mp4`: downloadable overview with English subtitles burned in.
 - `assets/demo.en.srt`: editable subtitles for video editors.
@@ -55,3 +58,5 @@ python docs/website/tools/prepare_media.py
 The script uses the already downloaded fonts. Rendering intermediates stay in `playground/website/render/`. Keep `assets/comparisons.json` in sync. Poster and social-image generation is included in the media preparation script.
 
 To re-export only the demo from an updated PPT, run `python docs/website/tools/export_ppt.py`. To rebuild only the 20 three-view comparisons, run `python docs/website/tools/compose_views.py`.
+
+To regenerate the continuous cover video, chapter timestamps and five posters, run `python docs/website/tools/prepare_hero.py` (requires ffmpeg and the original recordings in `web/real-exp/`).

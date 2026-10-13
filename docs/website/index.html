@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f5f0">
+  <meta name="theme-color" content="#202c28">
   <title>Forward Dynamics Model — FDM</title>
   <meta name="description" content="FDM learns robotic actions with future-state supervision, then acts without generating the future. Explore the method and real-robot comparisons.">
   <meta property="og:title" content="Forward Dynamics Model">
@@ -23,12 +23,37 @@
   <nav aria-label="Main navigation"><a href="#method">Method</a><a href="#experiments">Experiments</a><a href="https://github.com/LogosRoboticsGroup/FDM" class="repo-link">Code <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></nav>
 </header>
 <main id="main">
-  <section class="hero wrap" aria-labelledby="page-title">
-    <div class="hero-heading">
-      <h1 id="page-title">Forward<br>Dynamics Model</h1>
-      <div class="hero-intro"><p class="tagline">Learn from the future.<br>Act in the present.</p><p>A robot policy that learns from what happens next, without generating the future at inference.</p>
-      <div class="resource-links"><a class="button primary" href="https://arxiv.org/abs/2610.13117">Read the paper <span aria-hidden="true">↗</span></a><a class="text-link" href="https://arxiv.org/pdf/2610.13117">PDF <span aria-hidden="true">↗</span></a><a class="text-link" href="https://github.com/LogosRoboticsGroup/FDM">Explore the code <span aria-hidden="true">↗</span></a></div></div>
+  <section class="cover" aria-labelledby="page-title">
+    <div class="cover-media" aria-hidden="true">
+      <video id="cover-video" muted loop playsinline preload="none" poster="assets/hero/drawer.webp" data-src="assets/hero/rollouts.mp4" tabindex="-1"></video>
     </div>
+    <div class="cover-content wrap">
+      <h1 class="cover-title" id="page-title"><span class="cover-acronym">FDM</span><span class="cover-name">Forward Dynamics Model</span></h1>
+      <p class="cover-tagline">Learn from the future. Act in the present.</p>
+      <div class="cover-links">
+        <a class="button cover-paper" href="https://arxiv.org/abs/2610.13117">Read the paper <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
+        <a class="button cover-code" href="https://arxiv.org/pdf/2610.13117">PDF <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
+        <a class="button cover-code" href="https://github.com/LogosRoboticsGroup/FDM">Code <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-13-4 16"/></svg></a>
+      </div>
+    </div>
+    <div class="cover-bottom wrap">
+      <p class="cover-caption"><strong id="cover-task-name">Drawer packing</strong> <span>ARX-X5 · 1× speed</span></p>
+      <div class="cover-tasks" role="group" aria-label="Choose a background demonstration" hidden>
+        <button type="button" data-cover-task="drawer" aria-pressed="true">Drawer packing</button>
+        <button type="button" data-cover-task="gift" aria-pressed="false">Box packing</button>
+        <button type="button" data-cover-task="badminton" aria-pressed="false">Shuttlecock insertion</button>
+        <button type="button" data-cover-task="cup" aria-pressed="false">Paper-cup stacking</button>
+        <button type="button" data-cover-task="cube" aria-pressed="false">Block stacking</button>
+      </div>
+      <div class="cover-footer">
+        <a class="cover-scroll" href="#overview">Explore the project <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></a>
+        <button class="cover-playback" id="cover-playback" type="button" aria-controls="cover-video" hidden><svg class="cover-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg><svg class="cover-pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg><span>Play video</span></button>
+      </div>
+      <p class="cover-status" id="cover-status" role="status"></p>
+    </div>
+  </section>
+
+  <section class="project-overview wrap" id="overview" aria-label="Project overview">
     <figure class="demo-figure" id="demo">
       <div class="demo-stage">
         <video id="demo-video" controls playsinline preload="none" poster="assets/cover-drawer.png" aria-label="Forward Dynamics Model research overview" aria-describedby="demo-caption">
