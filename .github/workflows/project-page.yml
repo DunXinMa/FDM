@@ -27,7 +27,7 @@ jobs:
       - name: Assemble the static site
         run: |
           mkdir -p _site
-          cp docs/website/index.html docs/website/styles.css docs/website/app.js _site/
+          cp docs/website/index.html docs/website/styles.css docs/website/diagrams.css docs/website/app.js _site/
           cp -R docs/website/assets _site/assets
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5

@@ -133,6 +133,12 @@ const modeCopy = {
   training: 'Train jointly with action imitation and future prediction. Asymmetric attention blocks future information from reaching actions, including through context.',
   inference: 'Keep the observation and instruction processing needed by the action expert. Skip future generation entirely; predicted futures are never an input to the policy.',
 };
+const diagramModeCopy = {
+  training: 'Action features condition future prediction; the future loss supervises those features.',
+  inference: 'Predict actions without generating futures. Retain the current-observation processing needed by the policy.',
+};
+const motDescription = document.querySelector('#mot-description');
+const trainingDescription = motDescription.textContent;
 document.querySelectorAll('[data-mode]').forEach(button => {
   if (button.tagName !== 'BUTTON') return;
   button.addEventListener('click', () => {
@@ -142,9 +148,45 @@ document.querySelectorAll('[data-mode]').forEach(button => {
       item.setAttribute('aria-pressed', String(selected));
     });
     document.querySelector('#pipeline-display').dataset.mode = button.dataset.mode;
+    document.querySelector('#pipeline-detail').dataset.mode = button.dataset.mode;
     document.querySelector('#mode-explanation').textContent = modeCopy[button.dataset.mode];
+    document.querySelector('#pipeline-detail-caption').textContent = diagramModeCopy[button.dataset.mode];
+    motDescription.textContent = button.dataset.mode === 'training' ? trainingDescription : modeCopy.inference;
   });
 });
+
+// Animate only visible figures. Static arrowheads preserve meaning when motion is off.
+const flowFigures = new Map([...document.querySelectorAll('[data-flow-figure]')].map(figure => [
+  figure, { inView: false, paused: false, button: figure.querySelector('[data-flow-toggle]') },
+]));
+
+function syncDiagramMotion() {
+  flowFigures.forEach((state, figure) => {
+    const details = figure.closest('details');
+    const running = state.inView && !state.paused && !document.hidden && !reducedMotion.matches
+      && (!details || details.open);
+    figure.dataset.flowState = running ? 'running' : 'paused';
+    state.button.hidden = reducedMotion.matches;
+    state.button.textContent = state.paused ? 'Play animation' : 'Pause animation';
+  });
+}
+
+const flowObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => { flowFigures.get(entry.target).inView = entry.isIntersecting; });
+  syncDiagramMotion();
+}, { threshold: 0 });
+
+flowFigures.forEach((state, figure) => {
+  state.button.addEventListener('click', () => {
+    state.paused = !state.paused;
+    syncDiagramMotion();
+  });
+  figure.closest('details')?.addEventListener('toggle', syncDiagramMotion);
+  flowObserver.observe(figure);
+});
+document.addEventListener('visibilitychange', syncDiagramMotion);
+reducedMotion.addEventListener('change', syncDiagramMotion);
+syncDiagramMotion();
 
 const tasks = {
   drawer: { name: 'Drawer packing', description: 'Place the objects in the drawer and close it.' },

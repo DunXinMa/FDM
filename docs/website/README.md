@@ -20,7 +20,7 @@ For video chapter seeking during playback, use a preview server with HTTP byte-r
 
 The project URL is https://logosroboticsgroup.github.io/FDM/.
 
-1. Include `docs/website/index.html`, `docs/website/styles.css`, `docs/website/app.js`, **all of `docs/website/assets/`**, and `.github/workflows/project-page.yml` in the repository.
+1. Include `docs/website/index.html`, `docs/website/styles.css`, `docs/website/diagrams.css`, `docs/website/app.js`, **all of `docs/website/assets/`**, and `.github/workflows/project-page.yml` in the repository.
 2. In repository **Settings → Pages → Build and deployment**, select **GitHub Actions**.
 3. Push to the default branch, or run **Deploy FDM project page** manually from Actions. Only the default branch deploys automatically.
 4. Use the successful deployment's `page_url` as the live URL. Creating these files locally does not publish the site.
@@ -45,6 +45,7 @@ The workflow uploads only the website and prepared assets. Raw recordings, Power
 - `assets/comparisons/`: 20 H.264/yuv420p synchronized composites with MP4 fast-start and WebP posters. Each is 640 × 720: third view at 640 × 480 above left/right wrist views at 320 × 240 each. Shorter views hold their final frame. Original videos remain locally in `web/real-exp/`.
 - `assets/comparisons.json`: durations and any incomplete view names for each composite.
 - `assets/*.{pdf,webp}`: original figure PDFs and raster derivatives.
+- Architecture comparison and the full MoT pipeline are inline SVG in `index.html`, styled by `diagrams.css`. Text and arrows stay sharp when zoomed. The pipeline opens by default and follows the training/inference controls. Arrow animations pause offscreen, in hidden tabs, when collapsed, or via each figure's pause button; reduced motion and disabled JavaScript retain static diagrams. Narrow screens stack the architecture panels and allow horizontal scrolling of the full pipeline. Original PDFs remain linked below both figures.
 - Fonts: DM Sans for body text, Libre Caslon Display for webpage headings, and Instrument Serif in the prepared video graphics, self-hosted under the SIL Open Font License; license files are in `assets/fonts/`.
 
 To regenerate derived figures, videos and subtitles from source material (not needed for hosting):
