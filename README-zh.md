@@ -2,7 +2,7 @@
 
 论文 **Forward Dynamics Models（FDM）** 的官方实现。
 
-[📄 论文](https://arxiv.org/abs/2610.13117) · [PDF](https://arxiv.org/pdf/2610.13117) · [🌐 项目主页](https://logosroboticsgroup.github.io/FDM/) · [English / 完整安装与运行说明](README.md)
+[📄 论文](https://arxiv.org/abs/2610.13117) · [🌐 项目主页](https://logosroboticsgroup.github.io/FDM/) · [English / 完整安装与运行说明](README.md)
 
 ## ✨ 方法
 

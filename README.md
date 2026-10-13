@@ -4,7 +4,7 @@
 
 **Official implementation of “Forward Dynamics Models” (FDM).**
 
-[📄 Paper](https://arxiv.org/abs/2610.13117) · [PDF](https://arxiv.org/pdf/2610.13117) · [🌐 Project page](https://logosroboticsgroup.github.io/FDM/) · [中文](README-zh.md)
+[📄 Paper](https://arxiv.org/abs/2610.13117) · [🌐 Project page](https://logosroboticsgroup.github.io/FDM/) · [中文](README-zh.md)
 
 **Learn from the future. Act in the present.**
 
