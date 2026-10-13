@@ -6,8 +6,6 @@
 
 [📄 Paper](https://arxiv.org/abs/2610.13117) · [🌐 Project page](https://logosroboticsgroup.github.io/FDM/) · [中文](README-zh.md)
 
-**Learn from the future. Act in the present.**
-
 [Overview](#overview) · [Results](#results-reported-in-the-paper) · [Installation](#installation) · [Training](#training) · [Evaluation](#evaluation-and-inference)
 
 </div>
