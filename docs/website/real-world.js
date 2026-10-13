@@ -5,15 +5,18 @@ document.querySelectorAll('[data-sequence]').forEach(sequence => {
   const frames = [...sequence.querySelectorAll('.sequence-stage figure')];
   const play = sequence.querySelector('.sequence-play');
   const thumbnails = sequence.querySelector('.sequence-thumbnails');
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
   let index = 0;
   let timer;
-  let playing = false;
+  let wantsPlayback = !motionPreference.matches;
+  let inView = false;
 
-  function stop() {
+  function syncPlayback() {
     clearTimeout(timer);
-    playing = false;
-    play.textContent = index === frames.length - 1 ? 'Replay frames' : 'Play frames';
-    play.setAttribute('aria-pressed', 'false');
+    const playing = wantsPlayback && inView && !document.hidden;
+    play.textContent = playing ? 'Pause frames' : 'Play frames';
+    play.setAttribute('aria-pressed', String(playing));
+    if (playing) advance();
   }
 
   function show(next) {
@@ -24,11 +27,7 @@ document.querySelectorAll('[data-sequence]').forEach(sequence => {
 
   function advance() {
     timer = setTimeout(() => {
-      if (index === frames.length - 1) {
-        stop();
-        return;
-      }
-      show(index + 1);
+      show((index + 1) % frames.length);
       advance();
     }, 1600);
   }
@@ -40,26 +39,31 @@ document.querySelectorAll('[data-sequence]').forEach(sequence => {
     const image = frame.querySelector('img').cloneNode();
     image.alt = '';
     button.append(image);
-    button.addEventListener('click', () => { show(i); stop(); });
+    button.addEventListener('click', () => {
+      wantsPlayback = false;
+      show(i);
+      syncPlayback();
+    });
     thumbnails.append(button);
   });
   play.addEventListener('click', () => {
-    if (playing) { stop(); return; }
-    if (index === frames.length - 1) show(0);
-    playing = true;
-    play.textContent = 'Pause frames';
-    play.setAttribute('aria-pressed', 'true');
-    advance();
+    wantsPlayback = !wantsPlayback;
+    syncPlayback();
   });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+  document.addEventListener('visibilitychange', syncPlayback);
   new IntersectionObserver(entries => {
-    if (!entries[0].isIntersecting) stop();
+    inView = entries[0].isIntersecting;
+    syncPlayback();
   }).observe(sequence);
-  window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', stop);
+  motionPreference.addEventListener('change', () => {
+    wantsPlayback = !motionPreference.matches;
+    syncPlayback();
+  });
   show(0);
   sequence.classList.add('sequence-ready');
   sequence.querySelector('.sequence-toolbar').hidden = false;
   thumbnails.hidden = false;
+  syncPlayback();
 });
 
 // Link task descriptions to the existing four-policy comparison without starting playback.
