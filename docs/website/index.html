@@ -16,14 +16,16 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="diagrams.css">
   <link rel="stylesheet" href="results.css">
+  <link rel="stylesheet" href="real-world.css">
   <script src="app.js" defer></script>
   <script src="results.js" defer></script>
+  <script src="real-world.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header wrap">
   <a class="wordmark" href="#main" aria-label="FDM home"><svg viewBox="0 0 40 32" aria-hidden="true"><path d="M4 24V8h12v16h12V8h8M16 16h12"/></svg>FDM<span>Robot learning</span></a>
-  <nav aria-label="Main navigation"><a href="#method">Method</a><a href="#experiments">Experiments</a><a href="https://github.com/LogosRoboticsGroup/FDM" class="repo-link">Code <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></nav>
+  <nav aria-label="Main navigation"><a href="#method">Method</a><a href="#real-world">Experiments</a><a href="https://github.com/LogosRoboticsGroup/FDM" class="repo-link">Code <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></nav>
 </header>
 <main id="main">
   <section class="cover" aria-labelledby="page-title">
@@ -356,17 +358,145 @@
       </details>
     </div>
     <div class="result-analyses">
-      <article class="result-analysis">
+      <article class="result-analysis" id="future-sensitivity">
         <h3>Future errors stay<br>out of the action path.</h3>
         <p>At perturbation strength α = 1.0, FastWAM-Joint’s action error increases by 4.44% on LIBERO and 5.52% on RoboTwin. FDM’s actions remain unchanged when model parameters, inputs and action-sampling randomness are fixed.</p>
         <figure><a href="assets/future-perturbation.pdf" aria-label="Open the original future-perturbation figure"><img src="assets/future-perturbation.svg" width="720" height="432" loading="lazy" alt="FastWAM-Joint action error generally increases with future perturbation strength across seven settings. FDM is a dashed zero line representing architectural invariance."></a><figcaption><span>Figure 6 · Future-latent perturbations</span><a href="https://arxiv.org/pdf/2610.13117#page=9">Paper analysis</a></figcaption></figure>
         <p class="analysis-note">The FDM zero line is an architectural property under fixed inputs and randomness, rather than a fitted experimental curve.</p>
       </article>
-      <article class="result-analysis">
+      <article class="result-analysis" id="gradient-alignment">
         <h3>Future gradients support<br>action learning.</h3>
         <p>The paper measures cosine similarity between action-imitation gradients and future-loss gradients through the action-feature interface. Alignment is predominantly positive for VLM and positive in most VGM settings after initial fluctuations.</p>
         <figure><a href="assets/gradient-alignment.pdf" aria-label="Open the original gradient-alignment figure"><img src="assets/gradient-alignment.svg" width="1152" height="374" loading="lazy" alt="Gradient cosine similarity over training progress for FDM with VLM and VGM, across LIBERO, RoboTwin and five real-robot tasks."></a><figcaption><span>Figure 7 · Shared-context K/V projections</span><a href="https://arxiv.org/pdf/2610.13117#page=10">Paper analysis</a></figcaption></figure>
         <p class="analysis-note">The controlled ablations above isolate the behavioral contribution: full FDM improves average success over stop-gradient by 7 points for VLM and 5 points for VGM.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section wrap real-world-section" id="real-world" aria-labelledby="real-world-title">
+    <div class="section-heading"><h2 id="real-world-title">Real-world experiments.</h2><p>A shared robot setup, five manipulation tasks, and explicit success criteria. Explore how the demonstrations are collected and what each task asks the policy to do.</p></div>
+    <nav class="real-world-nav" aria-label="Real-world experiments"><a href="#experimental-setup">Experimental setup</a><a href="#task-details">Task details</a><a href="#experiments">Policy comparisons</a></nav>
+    <div class="robot-setup" id="experimental-setup">
+      <figure class="setup-figure"><a href="assets/expset.pdf" aria-label="Open the original experimental setup figure"><img src="assets/expset.webp" width="1543" height="1494" loading="lazy" alt="Two ARX-X5 arms face a tabletop. A D405 camera is mounted on each wrist; an overhead D435 captures the workspace from a third-person view."></a><figcaption><span>Figure 9 · Robot and camera layout</span><a href="assets/expset.pdf">Original figure · PDF</a></figcaption></figure>
+      <div class="setup-copy">
+        <h3>Experimental setup</h3>
+        <p>Two ARX-X5 arms observe the workspace from three viewpoints. Demonstrations are collected through VR teleoperation.</p>
+        <dl class="setup-specs">
+          <div><dt>Robot</dt><dd>Dual-arm ARX-X5</dd></div>
+          <div><dt>Workspace view</dt><dd>One RealSense D435</dd></div>
+          <div><dt>Wrist views</dt><dd>Two RealSense D405 cameras, one per arm</dd></div>
+          <div><dt>Teleoperation</dt><dd>PICO 4 Ultra VR headset</dd></div>
+          <div><dt>Control</dt><dd>30 Hz · 20-dimensional bimanual actions: position, rotation and gripper commands for each arm</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="setup-protocol">
+      <div><h4>Demonstrations</h4><p>150 trajectories per task: 147 for training and 3 for offline validation. Object placements vary across demonstrations and evaluation trials.</p></div>
+      <div><h4>Evaluation</h4><p>20 trials per method per task. Human evaluators are blinded to model identity and judge whether the task goal is met. Timeouts and trials judged unable to continue count as failures.</p></div>
+    </div>
+    <p class="setup-source">Hardware, collection protocol and task definitions: <a href="https://arxiv.org/pdf/2610.13117#page=23">Appendix D of the paper</a>.</p>
+    <div class="task-details" id="task-details">
+      <div class="task-details-heading"><h3>Task details</h3><p>Inspect six chronological frames from each task in the paper, or jump to the full policy comparisons.</p></div>
+      <nav class="task-detail-nav" aria-label="Jump to task details"><a href="#task-drawer">Drawer packing</a><a href="#task-gift">Box packing</a><a href="#task-badminton">Shuttlecock insertion</a><a href="#task-cup">Cup stacking</a><a href="#task-cube">Block stacking</a></nav>
+      <article class="task-detail" id="task-drawer" aria-labelledby="task-drawer-title">
+        <div class="task-sequence" data-sequence>
+          <div class="sequence-stage">
+            <figure><img src="assets/tasks/drawer/frame-1.png" width="640" height="480" loading="lazy" alt="Drawer packing, chronological frame 1 of 6 from Figure 10."><figcaption>Figure 10 · Frame 1 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/drawer/frame-2.png" width="640" height="480" loading="lazy" alt="Drawer packing, chronological frame 2 of 6 from Figure 10."><figcaption>Figure 10 · Frame 2 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/drawer/frame-3.png" width="640" height="480" loading="lazy" alt="Drawer packing, chronological frame 3 of 6 from Figure 10."><figcaption>Figure 10 · Frame 3 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/drawer/frame-4.png" width="640" height="480" loading="lazy" alt="Drawer packing, chronological frame 4 of 6 from Figure 10."><figcaption>Figure 10 · Frame 4 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/drawer/frame-5.png" width="640" height="480" loading="lazy" alt="Drawer packing, chronological frame 5 of 6 from Figure 10."><figcaption>Figure 10 · Frame 5 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/drawer/frame-6.png" width="640" height="480" loading="lazy" alt="Drawer packing, chronological frame 6 of 6 from Figure 10."><figcaption>Figure 10 · Frame 6 of 6</figcaption></figure>
+          </div>
+          <div class="sequence-toolbar" hidden><p>Six sampled paper frames</p><button class="sequence-play" type="button" aria-pressed="false">Play frames</button></div>
+          <div class="sequence-thumbnails" role="group" aria-label="Drawer packing frames" hidden></div>
+        </div>
+        <div class="task-copy"><h4 id="task-drawer-title">Drawer packing</h4><p class="task-goal">Put a charger and a block inside an initially closed drawer, then close it again.</p>
+          <ol class="task-steps"><li>Pull the handle to open the drawer.</li><li>Pick up and place both objects inside.</li><li>Push the drawer fully closed.</li></ol>
+          <p class="task-success"><strong>Success condition</strong>Both objects are inside and the drawer is fully closed.</p>
+          <p class="task-variation">Charger and block positions are randomized; the drawer base shifts slightly.</p>
+          <div class="task-links"><a href="#experiments" data-compare-task="drawer">Compare policies <span aria-hidden="true">→</span></a><a href="https://arxiv.org/pdf/2610.13117#page=24">Task in the paper</a></div>
+        </div>
+      </article>
+      <article class="task-detail" id="task-gift" aria-labelledby="task-gift-title">
+        <div class="task-sequence" data-sequence>
+          <div class="sequence-stage">
+            <figure><img src="assets/tasks/gift/frame-1.png" width="640" height="480" loading="lazy" alt="Box packing and closing, chronological frame 1 of 6 from Figure 11."><figcaption>Figure 11 · Frame 1 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/gift/frame-2.png" width="640" height="480" loading="lazy" alt="Box packing and closing, chronological frame 2 of 6 from Figure 11."><figcaption>Figure 11 · Frame 2 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/gift/frame-3.png" width="640" height="480" loading="lazy" alt="Box packing and closing, chronological frame 3 of 6 from Figure 11."><figcaption>Figure 11 · Frame 3 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/gift/frame-4.png" width="640" height="480" loading="lazy" alt="Box packing and closing, chronological frame 4 of 6 from Figure 11."><figcaption>Figure 11 · Frame 4 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/gift/frame-5.png" width="640" height="480" loading="lazy" alt="Box packing and closing, chronological frame 5 of 6 from Figure 11."><figcaption>Figure 11 · Frame 5 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/gift/frame-6.png" width="640" height="480" loading="lazy" alt="Box packing and closing, chronological frame 6 of 6 from Figure 11."><figcaption>Figure 11 · Frame 6 of 6</figcaption></figure>
+          </div>
+          <div class="sequence-toolbar" hidden><p>Six sampled paper frames</p><button class="sequence-play" type="button" aria-pressed="false">Play frames</button></div>
+          <div class="sequence-thumbnails" role="group" aria-label="Box packing and closing frames" hidden></div>
+        </div>
+        <div class="task-copy"><h4 id="task-gift-title">Box packing and closing</h4><p class="task-goal">Pack a scarf and a flower into an open box, then close the lid.</p>
+          <ol class="task-steps"><li>Lift the scarf into the box.</li><li>Grasp the flower by its stem and place it over the scarf.</li><li>Lower the hinged lid without trapping either object.</li></ol>
+          <p class="task-success"><strong>Success condition</strong>Both objects are enclosed and the lid is closed.</p>
+          <p class="task-variation">The positions of the box, scarf and flower vary slightly.</p>
+          <div class="task-links"><a href="#experiments" data-compare-task="gift">Compare policies <span aria-hidden="true">→</span></a><a href="https://arxiv.org/pdf/2610.13117#page=24">Task in the paper</a></div>
+        </div>
+      </article>
+      <article class="task-detail" id="task-badminton" aria-labelledby="task-badminton-title">
+        <div class="task-sequence" data-sequence>
+          <div class="sequence-stage">
+            <figure><img src="assets/tasks/badminton/frame-1.png" width="640" height="480" loading="lazy" alt="Shuttlecock insertion, chronological frame 1 of 6 from Figure 12."><figcaption>Figure 12 · Frame 1 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/badminton/frame-2.png" width="640" height="480" loading="lazy" alt="Shuttlecock insertion, chronological frame 2 of 6 from Figure 12."><figcaption>Figure 12 · Frame 2 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/badminton/frame-3.png" width="640" height="480" loading="lazy" alt="Shuttlecock insertion, chronological frame 3 of 6 from Figure 12."><figcaption>Figure 12 · Frame 3 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/badminton/frame-4.png" width="640" height="480" loading="lazy" alt="Shuttlecock insertion, chronological frame 4 of 6 from Figure 12."><figcaption>Figure 12 · Frame 4 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/badminton/frame-5.png" width="640" height="480" loading="lazy" alt="Shuttlecock insertion, chronological frame 5 of 6 from Figure 12."><figcaption>Figure 12 · Frame 5 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/badminton/frame-6.png" width="640" height="480" loading="lazy" alt="Shuttlecock insertion, chronological frame 6 of 6 from Figure 12."><figcaption>Figure 12 · Frame 6 of 6</figcaption></figure>
+          </div>
+          <div class="sequence-toolbar" hidden><p>Six sampled paper frames</p><button class="sequence-play" type="button" aria-pressed="false">Play frames</button></div>
+          <div class="sequence-thumbnails" role="group" aria-label="Shuttlecock insertion frames" hidden></div>
+        </div>
+        <div class="task-copy"><h4 id="task-badminton-title">Shuttlecock insertion</h4><p class="task-goal">Insert two shuttlecocks into a tube using both arms together.</p>
+          <ol class="task-steps"><li>Hold the tube horizontally with one arm.</li><li>Align and insert the first shuttlecock with the other arm.</li><li>Keep the tube steady and insert the second shuttlecock.</li></ol>
+          <p class="task-success"><strong>Success condition</strong>Both shuttlecocks are inside the tube.</p>
+          <p class="task-variation">The tube shifts slightly; shuttlecock positions and orientations vary.</p>
+          <div class="task-links"><a href="#experiments" data-compare-task="badminton">Compare policies <span aria-hidden="true">→</span></a><a href="https://arxiv.org/pdf/2610.13117#page=25">Task in the paper</a></div>
+        </div>
+      </article>
+      <article class="task-detail" id="task-cup" aria-labelledby="task-cup-title">
+        <div class="task-sequence" data-sequence>
+          <div class="sequence-stage">
+            <figure><img src="assets/tasks/cup/frame-1.png" width="640" height="480" loading="lazy" alt="Paper-cup stacking, chronological frame 1 of 6 from Figure 13."><figcaption>Figure 13 · Frame 1 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cup/frame-2.png" width="640" height="480" loading="lazy" alt="Paper-cup stacking, chronological frame 2 of 6 from Figure 13."><figcaption>Figure 13 · Frame 2 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cup/frame-3.png" width="640" height="480" loading="lazy" alt="Paper-cup stacking, chronological frame 3 of 6 from Figure 13."><figcaption>Figure 13 · Frame 3 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cup/frame-4.png" width="640" height="480" loading="lazy" alt="Paper-cup stacking, chronological frame 4 of 6 from Figure 13."><figcaption>Figure 13 · Frame 4 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cup/frame-5.png" width="640" height="480" loading="lazy" alt="Paper-cup stacking, chronological frame 5 of 6 from Figure 13."><figcaption>Figure 13 · Frame 5 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cup/frame-6.png" width="640" height="480" loading="lazy" alt="Paper-cup stacking, chronological frame 6 of 6 from Figure 13."><figcaption>Figure 13 · Frame 6 of 6</figcaption></figure>
+          </div>
+          <div class="sequence-toolbar" hidden><p>Six sampled paper frames</p><button class="sequence-play" type="button" aria-pressed="false">Play frames</button></div>
+          <div class="sequence-thumbnails" role="group" aria-label="Paper-cup stacking frames" hidden></div>
+        </div>
+        <div class="task-copy"><h4 id="task-cup-title">Paper-cup stacking</h4><p class="task-goal">Build a two-tier structure: three cups below and two cups above.</p>
+          <ol class="task-steps"><li>Arrange three cups side by side to form the base.</li><li>Place the two remaining cups over the gaps in the base.</li><li>Withdraw the grippers without disturbing the structure.</li></ol>
+          <p class="task-success"><strong>Success condition</strong>The five-cup structure stands freely and stays stable.</p>
+          <p class="task-variation">Two cups start on the left and three on the right, with randomized positions on each side.</p>
+          <div class="task-links"><a href="#experiments" data-compare-task="cup">Compare policies <span aria-hidden="true">→</span></a><a href="https://arxiv.org/pdf/2610.13117#page=25">Task in the paper</a></div>
+        </div>
+      </article>
+      <article class="task-detail" id="task-cube" aria-labelledby="task-cube-title">
+        <div class="task-sequence" data-sequence>
+          <div class="sequence-stage">
+            <figure><img src="assets/tasks/cube/frame-1.png" width="640" height="480" loading="lazy" alt="Block stacking, chronological frame 1 of 6 from Figure 14."><figcaption>Figure 14 · Frame 1 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cube/frame-2.png" width="640" height="480" loading="lazy" alt="Block stacking, chronological frame 2 of 6 from Figure 14."><figcaption>Figure 14 · Frame 2 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cube/frame-3.png" width="640" height="480" loading="lazy" alt="Block stacking, chronological frame 3 of 6 from Figure 14."><figcaption>Figure 14 · Frame 3 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cube/frame-4.png" width="640" height="480" loading="lazy" alt="Block stacking, chronological frame 4 of 6 from Figure 14."><figcaption>Figure 14 · Frame 4 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cube/frame-5.png" width="640" height="480" loading="lazy" alt="Block stacking, chronological frame 5 of 6 from Figure 14."><figcaption>Figure 14 · Frame 5 of 6</figcaption></figure>
+            <figure><img src="assets/tasks/cube/frame-6.png" width="640" height="480" loading="lazy" alt="Block stacking, chronological frame 6 of 6 from Figure 14."><figcaption>Figure 14 · Frame 6 of 6</figcaption></figure>
+          </div>
+          <div class="sequence-toolbar" hidden><p>Six sampled paper frames</p><button class="sequence-play" type="button" aria-pressed="false">Play frames</button></div>
+          <div class="sequence-thumbnails" role="group" aria-label="Block stacking frames" hidden></div>
+        </div>
+        <div class="task-copy"><h4 id="task-cube-title">Block stacking</h4><p class="task-goal">Stack the small red and yellow blocks on the larger blue base.</p>
+          <ol class="task-steps"><li>Pick up the red block and place it on the blue block.</li><li>Place the yellow block on top of the red block.</li><li>Release and withdraw without disturbing the tower.</li></ol>
+          <p class="task-success"><strong>Success condition</strong>A stable three-block tower: blue below, red in the middle, yellow above.</p>
+          <p class="task-variation">Small-block positions are randomized; the blue base shifts slightly.</p>
+          <div class="task-links"><a href="#experiments" data-compare-task="cube">Compare policies <span aria-hidden="true">→</span></a><a href="https://arxiv.org/pdf/2610.13117#page=26">Task in the paper</a></div>
+        </div>
       </article>
     </div>
   </section>
@@ -383,6 +513,18 @@
       <p class="experiment-note">Each video combines a 640 × 480 third view above two 320 × 240 wrist views. All views start together; shorter recordings hold their final frame. Displayed duration is the recording length, not model inference latency. Individual clips illustrate behavior; aggregate success uses 20 trials per method per task.</p>
       <details class="real-results" open><summary>View aggregate real-robot success rates</summary><figure class="paper-figure"><img src="assets/real_results_bar.svg" width="2152" height="620" loading="lazy" alt="Paper figure comparing per-task and average success over five real-robot tasks, with 20 trials per method per task. Both FDM variants outperform their corresponding comparison methods on average."><figcaption>Per-task and average success rates from the paper. <a href="assets/real_results_bar.pdf">Open full-resolution PDF</a></figcaption></figure></details>
     </div>
+  </section>
+
+  <section class="section wrap experiment-qa" id="experiment-qa" aria-labelledby="experiment-qa-title">
+    <div class="section-heading"><h2 id="experiment-qa-title">Five questions from<br>the experiments.</h2><p>The main findings, in brief. Each answer links back to the evidence.</p></div>
+    <div class="qa-list">
+      <details open><summary>Does learning to predict the future improve task success?</summary><div class="qa-answer"><p>It helps across simulation and real-robot tests. On the five real tasks, FDM improves average success from 83% to 96% for the VLM family and from 78% to 83% over FastWAM-Joint for the VGM family. The gains are not universal: on LIBERO, FDM w/ VGM reaches 98.1%, slightly below LingBot-VA’s 98.5%.</p><a href="#results" data-result-view-target="real">Explore task success <span aria-hidden="true">→</span></a></div></details>
+      <details open><summary>Why send the future loss back through action features?</summary><div class="qa-answer"><p>Those gradients make the action features more useful for control. Compared with keeping the same forward connection but stopping its gradients, full FDM gains 7 percentage points for VLM and 5 for VGM on the real tasks.</p><a href="#results" data-result-view-target="ablations">Compare the ablations <span aria-hidden="true">→</span></a></div></details>
+      <details open><summary>Can a wrong future prediction change the action?</summary><div class="qa-answer"><p>In FDM, actions never read predicted futures, so changing a future prediction leaves actions unchanged when model parameters, inputs and sampling randomness are fixed. FastWAM-Joint depends on those futures: at the strongest tested perturbation, its action error rises by 4.44% on LIBERO and 5.52% on RoboTwin.</p><a href="#future-sensitivity">See the perturbation analysis <span aria-hidden="true">→</span></a></div></details>
+      <details open><summary>Do future supervision and action imitation work together?</summary><div class="qa-answer"><p>The measured gradients generally point in compatible directions. Their alignment is mostly positive for VLM and becomes positive in most VGM settings after early fluctuations, supporting future prediction as a useful training signal for action learning.</p><a href="#gradient-alignment">See the gradient analysis <span aria-hidden="true">→</span></a></div></details>
+      <details open><summary>What does FDM cost to train and run?</summary><div class="qa-answer"><p>For VLM, training steps take about 42% longer, while inference stays close to π₀.₅ at about 203 ms per action chunk. For VGM, training cost is nearly unchanged and inference drops from 446.55 to 253.45 ms per chunk, about 1.8× faster than FastWAM-Joint on one H100.</p><a href="#results" data-result-view-target="efficiency">Compare training and inference costs <span aria-hidden="true">→</span></a></div></details>
+    </div>
+    <p class="qa-source">Condensed from the paper’s experimental questions Q1–Q5. <a href="https://arxiv.org/pdf/2610.13117#page=6">Read the full experiments</a>.</p>
   </section>
 
   <section class="section wrap citation-section" id="citation" aria-labelledby="citation-title"><div><h2 id="citation-title">Build on FDM.</h2><p>Code, training configurations, and evaluation instructions are available in the repository.</p><a class="button primary" href="https://github.com/LogosRoboticsGroup/FDM">View on GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></div><div class="citation-block"><div class="citation-heading"><h3>Citation</h3><button type="button" id="copy-citation">Copy BibTeX</button></div><pre id="bibtex">@misc{ma2026forward,

@@ -20,7 +20,7 @@ For video chapter seeking during playback, use a preview server with HTTP byte-r
 
 The project URL is https://logosroboticsgroup.github.io/FDM/.
 
-1. Include `docs/website/index.html`, both JavaScript files (`app.js`, `results.js`), all three stylesheets (`styles.css`, `diagrams.css`, `results.css`), **all of `docs/website/assets/`**, and `.github/workflows/project-page.yml` in the repository.
+1. Include `docs/website/index.html`, the JavaScript files (`app.js`, `results.js`, `real-world.js`), the stylesheets (`styles.css`, `diagrams.css`, `results.css`, `real-world.css`), **all of `docs/website/assets/`**, and `.github/workflows/project-page.yml` in the repository.
 2. In repository **Settings → Pages → Build and deployment**, select **GitHub Actions**.
 3. Push to the default branch, or run **Deploy FDM project page** manually from Actions. Only the default branch deploys automatically.
 4. Use the successful deployment's `page_url` as the live URL. Creating these files locally does not publish the site.
@@ -51,6 +51,37 @@ The workflow uploads only the website and prepared assets. Raw recordings, Power
 - `results.js`, `results.css`, and `assets/results.json` provide interactive real-robot, LIBERO, RoboTwin, ablation, and efficiency comparisons. All 158 numerical entries were checked against Tables 2–5 and Figure 5 of the published arXiv paper. Success bars start at zero and retain all reported baselines; efficiency charts label their units and preferred direction. Bars animate only when a reader changes a selection, respecting reduced motion. Exact values are available in an expanded table and downloadable JSON. The real-robot average chart and full real-robot table are also present in static HTML.
 - `assets/future-perturbation.{svg,pdf}`, `assets/gradient-alignment.{svg,pdf}`, and `assets/real_results_bar.svg` preserve the supplied paper figures as vectors. SVGs are direct PyMuPDF exports from the source PDFs, with text converted to paths. Captions use the published paper's figure numbering (5–7). The perturbation zero line is explicitly identified as an architectural property; the curves have not been reconstructed from guessed data.
 - Fonts: DM Sans for body text, Libre Caslon Display for webpage headings, and Instrument Serif in the prepared video graphics, self-hosted under the SIL Open Font License; license files are in `assets/fonts/`.
+
+## Real-world setup, tasks and experimental questions
+
+- `#real-world` separates the experimental setup from the task definitions, before the existing policy comparisons. Hardware and collection details follow Appendix D of arXiv:2610.13117v1; the evaluation uses 20 trials per method per task. The original setup figure (`expset.webp`, with its PDF link) identifies both robot arms and all three cameras.
+- `assets/tasks/<task>/frame-1.png` through `frame-6.png` contain the original six frames from Figures 10–14, in the order of their `image/real_*.tex` source files. They are copied from the supplied manuscript ZIP without pixel changes; source provenance is embedded as PNG metadata. The source ZIP's `figure/real-task/box/` is drawer packing, whereas `gift/` is box packing and closing.
+- Every task displays its goal, three operation steps, success condition and placement variations. `real-world.js` adds manual frame selection and user-initiated playback at 1.6 seconds per sampled frame, stopping at the last frame, offscreen or in a hidden tab. It is a paper-frame sequence, not a real-time video. Without JavaScript, all 30 frames remain visible as contact sheets. "Compare policies" selects the matching task below without starting its videos.
+- `#experiment-qa` is immediately before the citation section. Five concise answers paraphrase experimental questions Q1–Q5, preserve the relevant conditions and tradeoffs, and link to the existing results or analysis. All five answers are open by default.
+
+## Paper coverage audit
+
+Checked against arXiv:2610.13117v1 (27 pages, 14 figures, 11 tables). The author requested that the remaining figures and tables stay deferred after this audit.
+
+| Paper item | Project-page coverage |
+| --- | --- |
+| Figure 1 · Architectural comparison | Inline animated vector diagrams |
+| Figure 2 · Success versus latency | Not shown as a scatter plot; some values appear separately in the interactive results |
+| Figure 3 · FDM pipeline | Inline animated vector diagram |
+| Figure 4 · Two-frame task overview | Original montage not shown; task content is covered by the more detailed Figures 10–14 sequences |
+| Figure 5 · Real-robot results | Interactive chart, exact table and original vector figure |
+| Figures 6–7 · Perturbation and gradient analyses | Original vector figures with explanations |
+| Figure 8 · Asymmetric attention mask | Not shown; the pipeline explains the direction but does not display the mask matrix |
+| Figure 9 · Experimental setup | Original figure with hardware and collection details |
+| Figures 10–14 · Task sequences | Original six frames per task with goals, steps and success conditions |
+| Table 1 · Formulation comparison | The architectural explanation covers the idea; the formal training/inference table is not shown |
+| Tables 2–5 · Benchmarks, ablations and efficiency | Interactive charts and complete numerical tables |
+| Table 6 · Attention permissions | Not shown |
+| Tables 7–8 · Simulation training and evaluation settings | Not shown |
+| Tables 9–10 · Real-world training hyperparameters | Not shown; these differ from the collection protocol in the setup section |
+| Table 11 · RoboTwin results for all 50 tasks | Not shown; the benchmark explorer contains aggregate results from Table 3 |
+
+## Regenerate media
 
 To regenerate derived figures, videos and subtitles from source material (not needed for hosting):
 
